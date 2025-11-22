@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "FERC eLibrary",
   description: "Modern search interface for Federal Energy Regulatory Commission eLibrary documents",
   icons: {
-    icon: "https://elibrary.ferc.gov/eLibrary/favicon.ico",
+    icon: "/favicon.ico",
   },
     generator: 'v0.app'
 }
