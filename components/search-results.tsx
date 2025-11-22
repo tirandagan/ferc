@@ -4,6 +4,8 @@ import { FileText, Download, Eye, Calendar, Building } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useState } from "react"
+import PDFViewerModal from "@/components/pdf-viewer-modal"
 
 // Mock data based on the screenshot
 const mockResults = [
@@ -65,6 +67,26 @@ const mockResults = [
 ]
 
 export default function SearchResults() {
+  const [selectedDocument, setSelectedDocument] = useState<{
+    id: string
+    docket: string
+    description: string
+    filedDate: string
+  } | null>(null)
+
+  const handleViewPDF = (result: (typeof mockResults)[0]) => {
+    setSelectedDocument({
+      id: result.id,
+      docket: result.docket,
+      description: result.description,
+      filedDate: result.filedDate,
+    })
+  }
+
+  const handleClosePDF = () => {
+    setSelectedDocument(null)
+  }
+
   return (
     <div className="space-y-6">
       {/* Results Header */}
@@ -131,7 +153,7 @@ export default function SearchResults() {
                   <Eye className="w-4 h-4" />
                   Preview
                 </Button>
-                <Button size="sm" variant="default" className="gap-2">
+                <Button size="sm" variant="default" className="gap-2" onClick={() => handleViewPDF(result)}>
                   <Download className="w-4 h-4" />
                   PDF
                 </Button>
@@ -153,6 +175,27 @@ export default function SearchResults() {
           </Button>
         </div>
       </div>
+
+      {/* PDF viewer modal */}
+      {selectedDocument && (
+        <PDFViewerModal
+          isOpen={true}
+          onClose={handleClosePDF}
+          document={{
+            docket: selectedDocument.docket,
+            title: selectedDocument.description,
+            date: selectedDocument.filedDate,
+          }}
+          highlights={[
+            {
+              page: 1,
+              text: "Site control and commercial readiness demonstrations required",
+              context:
+                "...requiring site control and commercial readiness demonstrations, implementing a first-ready, first-served cluster study approach...",
+            },
+          ]}
+        />
+      )}
     </div>
   )
 }
