@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import { X, Send, Sparkles, FileText, Calendar, Building, ExternalLink, ChevronDown } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { X, Send, Sparkles, FileText, ExternalLink, ChevronDown, Maximize2, Minimize2 } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import PDFViewerModal from "./pdf-viewer-modal"
 
 interface DocumentSource {
@@ -122,7 +123,7 @@ const DEMO_CONVERSATION: Message[] = [
   {
     role: "assistant",
     content:
-      "Order 2023, issued in July 2023, introduced major reforms to FERC's generator interconnection process:\n\n**Key Changes:**\n\n• **Cluster Study Process**: Shifted from serial first-come, first-served to cluster studies with a first-ready, first-served approach within each cluster\n\n• **Site Control Requirements**: Interconnection customers must demonstrate site control at the time of interconnection request (with limited exceptions)\n\n• **Commercial Readiness Deposits**: Introduced refundable deposits showing financial commitment ($10,000/MW for Phase I, additional amounts for later phases)\n\n• **Affected System Studies**: Reformed processes for analyzing impacts on neighboring transmission systems\n\n• **Transition Mechanisms**: Provided guidance for moving from old processes to new cluster approach\n\nThese reforms aim to reduce the massive backlog of interconnection requests (over 2,000 GW in queues) and speed up renewable energy deployment.",
+      "Order 2023, issued in July 2023, introduced major reforms to FERC's generator interconnection process:\n\n**Key Changes:**\n\n- **Cluster Study Process**: Shifted from serial first-come, first-served to cluster studies with a first-ready, first-served approach within each cluster\n\n- **Site Control Requirements**: Interconnection customers must demonstrate site control at the time of interconnection request (with limited exceptions)\n\n- **Commercial Readiness Deposits**: Introduced refundable deposits showing financial commitment ($10,000/MW for Phase I, additional amounts for later phases)\n\n- **Affected System Studies**: Reformed processes for analyzing impacts on neighboring transmission systems\n\n- **Transition Mechanisms**: Provided guidance for moving from old processes to new cluster approach\n\nThese reforms aim to reduce the massive backlog of interconnection requests (over 2,000 GW in queues) and speed up renewable energy deployment.",
     sources: [
       {
         docket: "RM22-14-000",
@@ -173,8 +174,6 @@ function MarkdownText({ content }: { content: string }) {
   const renderMarkdown = (text: string) => {
     const parts = []
     let currentIndex = 0
-
-    // Match bold text **xxx**
     const boldRegex = /\*\*(.+?)\*\*/g
     let match
 
@@ -196,17 +195,15 @@ function MarkdownText({ content }: { content: string }) {
   return (
     <div className="text-sm leading-relaxed whitespace-pre-line">
       {content.split("\n").map((line, i) => {
-        // Handle bullet points
         if (line.trim().startsWith("•") || line.trim().startsWith("-")) {
           const bulletContent = line.replace(/^[•-]\s*/, "")
           return (
-            <div key={i} className="flex gap-2 my-1">
-              <span>•</span>
+            <div key={i} className="flex gap-2 my-1 ml-2">
+              <span className="text-primary">•</span>
               <span>{renderMarkdown(bulletContent)}</span>
             </div>
           )
         }
-        // Handle numbered lists
         if (/^\d+\.\s/.test(line.trim())) {
           return (
             <div key={i} className="my-1">
@@ -214,7 +211,6 @@ function MarkdownText({ content }: { content: string }) {
             </div>
           )
         }
-        // Regular line
         return <div key={i}>{renderMarkdown(line)}</div>
       })}
     </div>
@@ -227,6 +223,17 @@ export default function AIChatPanel({ onClose }: AIChatPanelProps) {
   const [expandedSources, setExpandedSources] = useState<number[]>([])
   const [pdfViewerOpen, setPdfViewerOpen] = useState(false)
   const [selectedDocument, setSelectedDocument] = useState<DocumentSource | null>(null)
+  const [isExpanded, setIsExpanded] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      const scrollContainer = scrollRef.current.querySelector("[data-radix-scroll-area-viewport]")
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight
+      }
+    }
+  }, [messages])
 
   const toggleSources = (messageIndex: number) => {
     setExpandedSources((prev) =>
@@ -269,181 +276,173 @@ export default function AIChatPanel({ onClose }: AIChatPanelProps) {
     setInput("")
   }
 
+  const panelWidth = isExpanded ? "w-[600px]" : "w-[420px]"
+
   return (
-    <>
-      <div className="fixed right-0 top-0 h-full w-[400px] bg-card border-l shadow-2xl flex flex-col z-20 overflow-hidden">
-        {/* Header */}
-        <div className="p-4 border-b flex items-center justify-between bg-primary/5 flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Sparkles className="w-5 h-5 text-primary" />
+    <TooltipProvider>
+      <>
+        <div
+          className={`fixed right-0 top-0 h-full ${panelWidth} bg-card border-l shadow-2xl flex flex-col z-20 overflow-hidden transition-all duration-300`}
+        >
+          <div className="p-4 border-b flex items-center justify-between bg-gradient-to-r from-primary/10 to-primary/5 flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-primary/15">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">AI Research Assistant</h3>
+                <p className="text-xs text-muted-foreground">Powered by RAG</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-foreground">AI Assistant</h3>
-              <p className="text-xs text-muted-foreground">Powered by RAG</p>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" onClick={() => setIsExpanded(!isExpanded)}>
+                    {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{isExpanded ? "Collapse" : "Expand"}</TooltipContent>
+              </Tooltip>
+              <Button variant="ghost" size="icon" onClick={onClose}>
+                <X className="w-5 h-5" />
+              </Button>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
 
-        {/* Messages */}
-        <ScrollArea className="flex-1 h-0 p-4">
-          <div className="space-y-4">
-            {messages.map((message, index) => (
-              <div key={index} className="space-y-2">
-                <div className={`flex gap-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-                  {message.role === "assistant" && (
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-4 h-4 text-primary" />
-                    </div>
-                  )}
-                  <div
-                    className={`rounded-2xl px-4 py-2.5 max-w-[85%] ${
-                      message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
-                    }`}
-                  >
-                    <MarkdownText content={message.content} />
-                  </div>
-                </div>
-
-                {message.sources && message.sources.length > 0 && (
-                  <div className="ml-10 space-y-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-auto py-1 px-2 text-xs text-muted-foreground hover:text-foreground"
-                      onClick={() => toggleSources(index)}
-                    >
-                      <FileText className="w-3 h-3 mr-1" />
-                      {message.sources.length} source document{message.sources.length > 1 ? "s" : ""}
-                      <ChevronDown
-                        className={`w-3 h-3 ml-1 transition-transform ${expandedSources.includes(index) ? "rotate-180" : ""}`}
-                      />
-                    </Button>
-
-                    {expandedSources.includes(index) && (
-                      <div className="space-y-2">
-                        {message.sources.map((source, i) => (
-                          <div key={i} className="bg-background border rounded-lg p-3 space-y-2">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <Badge variant="outline" className="text-xs font-mono">
-                                    {source.docket}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">{source.date}</span>
-                                </div>
-                                <p className="text-xs font-medium mt-1 text-pretty">{source.title}</p>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 flex-shrink-0"
-                                onClick={() => openPDFViewer(source)}
-                              >
-                                <ExternalLink className="w-3 h-3" />
-                              </Button>
-                            </div>
-                            <p className="text-xs text-muted-foreground italic border-l-2 border-primary/30 pl-2">
-                              {source.excerpt}
-                            </p>
-                          </div>
-                        ))}
+          <ScrollArea className="flex-1 h-0" ref={scrollRef}>
+            <div className="p-4 space-y-4">
+              {messages.map((message, index) => (
+                <div key={index} className="space-y-2">
+                  <div className={`flex gap-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                    {message.role === "assistant" && (
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Sparkles className="w-4 h-4 text-primary" />
                       </div>
                     )}
+                    <div
+                      className={`rounded-2xl px-4 py-3 max-w-[85%] ${
+                        message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+                      }`}
+                    >
+                      <MarkdownText content={message.content} />
+                    </div>
                   </div>
-                )}
 
-                {message.suggestions && (
-                  <div className="ml-10 space-y-2">
-                    <p className="text-xs text-muted-foreground">Suggested follow-ups:</p>
-                    {message.suggestions.map((suggestion, i) => (
+                  {message.sources && message.sources.length > 0 && (
+                    <div className="ml-10 space-y-2">
                       <Button
-                        key={i}
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="w-full justify-start text-left h-auto py-2 px-3 bg-transparent"
-                        onClick={() => setInput(suggestion)}
+                        className="h-auto py-1.5 px-3 text-xs text-primary hover:text-primary hover:bg-primary/10"
+                        onClick={() => toggleSources(index)}
                       >
-                        <span className="text-xs text-pretty">{suggestion}</span>
+                        <FileText className="w-3 h-3 mr-1.5" />
+                        {message.sources.length} source document{message.sources.length > 1 ? "s" : ""}
+                        <ChevronDown
+                          className={`w-3 h-3 ml-1 transition-transform ${expandedSources.includes(index) ? "rotate-180" : ""}`}
+                        />
                       </Button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
 
-        {/* Quick Actions */}
-        <div className="p-3 border-t bg-muted/30 flex-shrink-0">
-          <p className="text-xs text-muted-foreground mb-2 px-1">Quick actions:</p>
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-col h-auto py-2 gap-1 bg-transparent"
-              onClick={() => setInput("Find recent filings")}
-            >
-              <FileText className="w-4 h-4" />
-              <span className="text-xs">Filings</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-col h-auto py-2 gap-1 bg-transparent"
-              onClick={() => setInput("Show me dockets")}
-            >
-              <Building className="w-4 h-4" />
-              <span className="text-xs">Dockets</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-col h-auto py-2 gap-1 bg-transparent"
-              onClick={() => setInput("Last 30 days")}
-            >
-              <Calendar className="w-4 h-4" />
-              <span className="text-xs">Recent</span>
-            </Button>
+                      {expandedSources.includes(index) && (
+                        <div className="space-y-2">
+                          {message.sources.map((source, i) => (
+                            <div
+                              key={i}
+                              className="bg-background border rounded-xl p-3 space-y-2 hover:border-primary/30 transition-colors"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <Badge variant="outline" className="text-xs font-mono bg-primary/5">
+                                      {source.docket}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground">{source.date}</span>
+                                  </div>
+                                  <p className="text-xs font-medium mt-1.5 text-foreground">{source.title}</p>
+                                </div>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 flex-shrink-0 hover:bg-primary/10"
+                                      onClick={() => openPDFViewer(source)}
+                                    >
+                                      <ExternalLink className="w-3.5 h-3.5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>View Document</TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <p className="text-xs text-muted-foreground italic border-l-2 border-primary/30 pl-2">
+                                {source.excerpt}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {message.suggestions && (
+                    <div className="ml-10 space-y-1.5">
+                      <p className="text-xs text-muted-foreground">Suggested follow-ups:</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {message.suggestions.map((suggestion, i) => (
+                          <Button
+                            key={i}
+                            variant="outline"
+                            size="sm"
+                            className="h-auto py-1.5 px-3 text-xs bg-transparent hover:bg-primary/5 hover:border-primary/30"
+                            onClick={() => setInput(suggestion)}
+                          >
+                            {suggestion}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          <div className="p-4 border-t bg-muted/30 flex-shrink-0">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Ask about FERC documents..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                className="flex-1 bg-background"
+              />
+              <Button onClick={handleSend} size="icon" className="shrink-0">
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              AI responses are generated from indexed FERC documents
+            </p>
           </div>
         </div>
 
-        {/* Input */}
-        <div className="p-4 border-t flex-shrink-0">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Ask about documents..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              className="flex-1"
-            />
-            <Button onClick={handleSend} size="icon">
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {selectedDocument && (
-        <PDFViewerModal
-          isOpen={pdfViewerOpen}
-          onClose={() => setPdfViewerOpen(false)}
-          document={selectedDocument}
-          highlights={
-            selectedDocument.highlights || [
-              {
-                page: 1,
-                text: "Sample highlighted text from this document",
-                context: "This shows where the AI found relevant information to answer your question...",
-              },
-            ]
-          }
-        />
-      )}
-    </>
+        {selectedDocument && (
+          <PDFViewerModal
+            isOpen={pdfViewerOpen}
+            onClose={() => setPdfViewerOpen(false)}
+            document={selectedDocument}
+            highlights={
+              selectedDocument.highlights || [
+                {
+                  page: 1,
+                  text: "Sample highlighted text from this document",
+                  context: "This shows where the AI found relevant information to answer your question...",
+                },
+              ]
+            }
+          />
+        )}
+      </>
+    </TooltipProvider>
   )
 }

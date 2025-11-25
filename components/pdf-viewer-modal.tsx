@@ -1,6 +1,6 @@
 "use client"
 
-import { X, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from "lucide-react"
+import { X, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from "@/components/icons"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
