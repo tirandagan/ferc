@@ -63,7 +63,7 @@ export default function TariffTimeTravelPanel({ isOpen, onClose }: TariffTimeTra
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="fixed inset-4 translate-x-0 translate-y-0 top-4 left-4 right-4 bottom-4 max-w-none w-auto h-auto p-0 flex flex-col"
+        className="fixed top-[5%] left-[5%] right-[5%] bottom-[5%] w-[90%] h-[90%] max-w-none p-0 flex flex-col translate-x-0 translate-y-0"
         showCloseButton={false}
       >
         <DialogHeader className="p-4 border-b flex-shrink-0">
@@ -130,7 +130,7 @@ export default function TariffTimeTravelPanel({ isOpen, onClose }: TariffTimeTra
           <div className="mb-8">
             <div className="flex items-center justify-between relative">
               <div className="absolute top-1/2 left-0 right-0 h-1 bg-muted -translate-y-1/2" />
-              {mockVersions.map((version, i) => (
+              {mockVersions.map((version) => (
                 <div key={version.id} className="relative z-10 flex flex-col items-center">
                   <div
                     className={`w-4 h-4 rounded-full border-2 ${

@@ -39,7 +39,7 @@ export default function GeospatialMapPanel({ isOpen, onClose, projectName, docke
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="fixed inset-4 translate-x-0 translate-y-0 top-4 left-4 right-4 bottom-4 max-w-none w-auto h-auto p-0 flex flex-col"
+        className="fixed top-[5%] left-[5%] right-[5%] bottom-[5%] w-[90%] h-[90%] max-w-none p-0 flex flex-col translate-x-0 translate-y-0"
         showCloseButton={false}
       >
         <DialogHeader className="p-4 border-b flex-shrink-0">
@@ -204,11 +204,11 @@ export default function GeospatialMapPanel({ isOpen, onClose, projectName, docke
                 <div className="space-y-2">
                   <Card className="p-2">
                     <p className="text-xs font-medium">Environmental Assessment</p>
-                    <p className="text-xs text-muted-foreground">Pages 45-67 • Route Description</p>
+                    <p className="text-xs text-muted-foreground">Pages 45-67 - Route Description</p>
                   </Card>
                   <Card className="p-2">
                     <p className="text-xs font-medium">Resource Report 1</p>
-                    <p className="text-xs text-muted-foreground">Pages 12-34 • Facility Locations</p>
+                    <p className="text-xs text-muted-foreground">Pages 12-34 - Facility Locations</p>
                   </Card>
                 </div>
               </div>

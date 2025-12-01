@@ -62,7 +62,7 @@ export default function DevilsAdvocatePanel({ isOpen, onClose }: DevilsAdvocateP
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="fixed inset-4 translate-x-0 translate-y-0 top-4 left-4 right-4 bottom-4 max-w-none w-auto h-auto p-0 flex flex-col"
+        className="fixed top-[5%] left-[5%] right-[5%] bottom-[5%] w-[90%] h-[90%] max-w-none p-0 flex flex-col translate-x-0 translate-y-0"
         showCloseButton={false}
       >
         <DialogHeader className="p-4 border-b flex-shrink-0">
@@ -141,7 +141,7 @@ export default function DevilsAdvocatePanel({ isOpen, onClose }: DevilsAdvocateP
           <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
             {hasAnalysis ? (
               <>
-                <div className="p-4 border-b bg-amber-50">
+                <div className="p-4 border-b bg-amber-50 flex-shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-full bg-amber-100">
                       <span className="text-xl">🌿</span>
@@ -219,10 +219,10 @@ export default function DevilsAdvocatePanel({ isOpen, onClose }: DevilsAdvocateP
                       <h4 className="font-semibold text-green-900">Strengthening Recommendations</h4>
                     </div>
                     <ul className="space-y-2 text-sm text-green-800">
-                      <li>• Add explicit citation to Order No. 2222 compliance in Section III</li>
-                      <li>• Include environmental justice analysis per Policy Statement PL21-3</li>
-                      <li>• Update load forecast with post-pandemic data and methodology</li>
-                      <li>• Add cost causation analysis demonstrating residential rate impact</li>
+                      <li>- Add explicit citation to Order No. 2222 compliance in Section III</li>
+                      <li>- Include environmental justice analysis per Policy Statement PL21-3</li>
+                      <li>- Update load forecast with post-pandemic data and methodology</li>
+                      <li>- Add cost causation analysis demonstrating residential rate impact</li>
                     </ul>
                   </Card>
                 </div>
