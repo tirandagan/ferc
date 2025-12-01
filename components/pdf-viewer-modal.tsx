@@ -5,7 +5,6 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface PDFViewerModalProps {
   isOpen: boolean
@@ -29,11 +28,14 @@ export default function PDFViewerModal({ isOpen, onClose, document, highlights }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl h-[90vh] p-0 gap-0" showCloseButton={false}>
+      <DialogContent
+        className="fixed inset-4 translate-x-0 translate-y-0 top-4 left-4 right-4 bottom-4 max-w-none w-auto h-auto p-0 flex flex-col"
+        showCloseButton={false}
+      >
         <DialogHeader className="p-4 border-b flex-shrink-0">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <DialogTitle className="text-lg mb-2">{document.title}</DialogTitle>
+              <DialogTitle className="text-lg mb-2 truncate">{document.title}</DialogTitle>
               <div className="flex items-center gap-3 flex-wrap">
                 <Badge variant="outline" className="font-mono">
                   {document.docket}
@@ -41,15 +43,15 @@ export default function PDFViewerModal({ isOpen, onClose, document, highlights }
                 <span className="text-sm text-muted-foreground">{document.date}</span>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose} className="flex-shrink-0">
               <X className="w-5 h-5" />
             </Button>
           </div>
         </DialogHeader>
 
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex min-h-0 overflow-hidden">
           {/* PDF Viewer */}
-          <div className="flex-1 flex flex-col bg-muted/30">
+          <div className="flex-1 flex flex-col min-w-0 bg-muted/30">
             {/* Toolbar */}
             <div className="p-3 border-b bg-background flex items-center justify-between gap-4 flex-shrink-0">
               <div className="flex items-center gap-2">
@@ -99,8 +101,7 @@ export default function PDFViewerModal({ isOpen, onClose, document, highlights }
               </div>
             </div>
 
-            {/* PDF Content */}
-            <ScrollArea className="flex-1 p-8">
+            <div className="flex-1 overflow-auto p-8">
               <div
                 className="mx-auto bg-white shadow-lg"
                 style={{
@@ -184,11 +185,10 @@ export default function PDFViewerModal({ isOpen, onClose, document, highlights }
                   </div>
                 </div>
               </div>
-            </ScrollArea>
+            </div>
           </div>
 
-          {/* Highlights Sidebar */}
-          <div className="w-80 border-l bg-background flex flex-col">
+          <div className="w-72 border-l bg-background flex flex-col flex-shrink-0">
             <div className="p-4 border-b flex-shrink-0">
               <h3 className="font-semibold text-sm mb-1">Relevant Excerpts</h3>
               <p className="text-xs text-muted-foreground">
@@ -196,8 +196,8 @@ export default function PDFViewerModal({ isOpen, onClose, document, highlights }
               </p>
             </div>
 
-            <ScrollArea className="flex-1">
-              <div className="p-4 space-y-3">
+            <div className="flex-1 overflow-auto p-4">
+              <div className="space-y-3">
                 {highlights.map((highlight, index) => (
                   <button
                     key={index}
@@ -214,7 +214,7 @@ export default function PDFViewerModal({ isOpen, onClose, document, highlights }
                   </button>
                 ))}
               </div>
-            </ScrollArea>
+            </div>
           </div>
         </div>
       </DialogContent>

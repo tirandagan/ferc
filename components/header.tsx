@@ -13,6 +13,11 @@ import {
   Clock,
   Star,
   ChevronDown,
+  Map,
+  Table,
+  Scale,
+  History,
+  Languages,
 } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import {
@@ -28,9 +33,22 @@ import { Badge } from "@/components/ui/badge"
 interface HeaderProps {
   showAIChat: boolean
   setShowAIChat: (show: boolean) => void
+  onOpenGeospatial?: () => void
+  onOpenDataScout?: () => void
+  onOpenDevilsAdvocate?: () => void
+  onOpenTariffTimeTravel?: () => void
+  onOpenPlainEnglish?: () => void
 }
 
-export default function Header({ showAIChat, setShowAIChat }: HeaderProps) {
+export default function Header({
+  showAIChat,
+  setShowAIChat,
+  onOpenGeospatial,
+  onOpenDataScout,
+  onOpenDevilsAdvocate,
+  onOpenTariffTimeTravel,
+  onOpenPlainEnglish,
+}: HeaderProps) {
   return (
     <header className="border-b bg-card sticky top-0 z-30 shadow-sm flex-shrink-0">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,6 +94,55 @@ export default function Header({ showAIChat, setShowAIChat }: HeaderProps) {
                       <Badge variant="secondary" className="text-xs">
                         New
                       </Badge>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="gap-1">
+                    AI Tools
+                    <Badge variant="secondary" className="text-xs ml-1">
+                      New
+                    </Badge>
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-72">
+                  <DropdownMenuItem className="flex items-center gap-3 p-3" onClick={onOpenGeospatial}>
+                    <Map className="w-4 h-4 text-green-600" />
+                    <div>
+                      <div className="font-medium">Project Vision Map</div>
+                      <p className="text-xs text-muted-foreground">Visualize pipeline routes & facilities</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-3 p-3" onClick={onOpenDataScout}>
+                    <Table className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <div className="font-medium">Data Scout</div>
+                      <p className="text-xs text-muted-foreground">Extract & compare data across filings</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-3 p-3" onClick={onOpenDevilsAdvocate}>
+                    <Scale className="w-4 h-4 text-purple-600" />
+                    <div>
+                      <div className="font-medium">Devil's Advocate</div>
+                      <p className="text-xs text-muted-foreground">Anticipate objections to your filing</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-3 p-3" onClick={onOpenTariffTimeTravel}>
+                    <History className="w-4 h-4 text-orange-600" />
+                    <div>
+                      <div className="font-medium">Tariff Time-Travel</div>
+                      <p className="text-xs text-muted-foreground">Track semantic changes over time</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex items-center gap-3 p-3" onClick={onOpenPlainEnglish}>
+                    <Languages className="w-4 h-4 text-teal-600" />
+                    <div>
+                      <div className="font-medium">Plain English</div>
+                      <p className="text-xs text-muted-foreground">Translate legal jargon for everyone</p>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

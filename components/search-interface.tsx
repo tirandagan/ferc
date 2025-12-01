@@ -11,6 +11,11 @@ import SearchResults from "./search-results"
 import AIChatPanel from "./ai-chat-panel"
 import FilterPanel from "./filter-panel"
 import Header from "./header"
+import GeospatialMapPanel from "./features/geospatial-map-panel"
+import DataScoutPanel from "./features/data-scout-panel"
+import DevilsAdvocatePanel from "./features/devils-advocate-panel"
+import TariffTimeTravelPanel from "./features/tariff-time-travel-panel"
+import PlainEnglishPanel from "./features/plain-english-panel"
 
 export default function SearchInterface() {
   const [query, setQuery] = useState("")
@@ -18,6 +23,12 @@ export default function SearchInterface() {
   const [showAIChat, setShowAIChat] = useState(false)
   const [activeFilters, setActiveFilters] = useState<string[]>([])
   const [hasSearched, setHasSearched] = useState(true)
+
+  const [showGeospatial, setShowGeospatial] = useState(false)
+  const [showDataScout, setShowDataScout] = useState(false)
+  const [showDevilsAdvocate, setShowDevilsAdvocate] = useState(false)
+  const [showTariffTimeTravel, setShowTariffTimeTravel] = useState(false)
+  const [showPlainEnglish, setShowPlainEnglish] = useState(false)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,7 +48,15 @@ export default function SearchInterface() {
       <div
         className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${showAIChat ? "mr-[420px]" : ""}`}
       >
-        <Header showAIChat={showAIChat} setShowAIChat={setShowAIChat} />
+        <Header
+          showAIChat={showAIChat}
+          setShowAIChat={setShowAIChat}
+          onOpenGeospatial={() => setShowGeospatial(true)}
+          onOpenDataScout={() => setShowDataScout(true)}
+          onOpenDevilsAdvocate={() => setShowDevilsAdvocate(true)}
+          onOpenTariffTimeTravel={() => setShowTariffTimeTravel(true)}
+          onOpenPlainEnglish={() => setShowPlainEnglish(true)}
+        />
 
         <div className="flex-1 overflow-y-auto">
           {/* Search Hero Section */}
@@ -170,7 +189,10 @@ export default function SearchInterface() {
           {hasSearched && (
             <div className="bg-muted/20">
               <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <SearchResults />
+                <SearchResults
+                  onOpenPlainEnglish={() => setShowPlainEnglish(true)}
+                  onOpenGeospatial={() => setShowGeospatial(true)}
+                />
               </div>
             </div>
           )}
@@ -179,6 +201,28 @@ export default function SearchInterface() {
 
       {/* AI Chat Panel */}
       {showAIChat && <AIChatPanel onClose={() => setShowAIChat(false)} />}
+
+      <GeospatialMapPanel
+        isOpen={showGeospatial}
+        onClose={() => setShowGeospatial(false)}
+        projectName="New Jersey Expansion Project"
+        docket="CP24-1234-000"
+      />
+
+      <DataScoutPanel isOpen={showDataScout} onClose={() => setShowDataScout(false)} />
+
+      <DevilsAdvocatePanel isOpen={showDevilsAdvocate} onClose={() => setShowDevilsAdvocate(false)} />
+
+      <TariffTimeTravelPanel isOpen={showTariffTimeTravel} onClose={() => setShowTariffTimeTravel(false)} />
+
+      <PlainEnglishPanel
+        isOpen={showPlainEnglish}
+        onClose={() => setShowPlainEnglish(false)}
+        document={{
+          title: "Order Accepting Tariff Revisions",
+          docket: "ER24-1234-000",
+        }}
+      />
     </div>
   )
 }
